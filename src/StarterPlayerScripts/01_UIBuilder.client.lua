@@ -114,7 +114,7 @@ popupLayer.Parent = screenGui
 local shopPanel = Instance.new("Frame")
 shopPanel.Name = "ShopPanel"
 shopPanel.BackgroundColor3 = COLOR_PANEL
-shopPanel.Size = UDim2.new(0, 320, 1, -220)
+shopPanel.Size = UDim2.new(0, 320, 1, -280)
 shopPanel.Position = UDim2.new(1, -340, 0, 110)
 shopPanel.Parent = screenGui
 corner(UDim.new(0, 16), shopPanel)
@@ -151,15 +151,15 @@ shopLayout.Parent = shopList
 local rebirthPanel = Instance.new("Frame")
 rebirthPanel.Name = "RebirthPanel"
 rebirthPanel.BackgroundColor3 = COLOR_PANEL
-rebirthPanel.Size = UDim2.new(0, 420, 0, 190)
-rebirthPanel.Position = UDim2.new(0.5, -210, 1, -200)
+rebirthPanel.Size = UDim2.new(0, 420, 0, 140)
+rebirthPanel.Position = UDim2.new(0.5, -210, 1, -150)
 rebirthPanel.Parent = screenGui
 corner(UDim.new(0, 16), rebirthPanel)
 
 makeLabel({
-	Name = "CostLabel",
+	Name = "StatusLabel",
 	Parent = rebirthPanel,
-	Text = "Rebirth Cost: $1,000",
+	Text = "Save $1,000 for your first Rebirth",
 	TextSize = 18,
 	Color = COLOR_TEXT,
 	XAlign = Enum.TextXAlignment.Center,
@@ -193,16 +193,3 @@ rebirthButton.TextSize = 20
 rebirthButton.Text = "REBIRTH"
 rebirthButton.Parent = rebirthPanel
 corner(UDim.new(0, 10), rebirthButton)
-
-local massRebirthButton = Instance.new("TextButton")
-massRebirthButton.Name = "MassRebirthButton"
-massRebirthButton.BackgroundColor3 = Color3.fromRGB(215, 175, 60)
-massRebirthButton.Size = UDim2.new(1, -40, 0, 44)
-massRebirthButton.Position = UDim2.new(0, 20, 0, 124)
-massRebirthButton.Font = Enum.Font.GothamBlack
-massRebirthButton.TextColor3 = Color3.fromRGB(40, 30, 5)
-massRebirthButton.TextSize = 20
-massRebirthButton.Text = "MASS REBIRTH x1000 ($1,000,000)"
-massRebirthButton.Visible = false
-massRebirthButton.Parent = rebirthPanel
-corner(UDim.new(0, 10), massRebirthButton)

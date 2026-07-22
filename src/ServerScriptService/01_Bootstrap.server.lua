@@ -25,7 +25,6 @@ end
 newRemoteEvent("ClickEvent")
 newRemoteEvent("BuyUpgradeEvent")
 newRemoteEvent("RebirthEvent")
-newRemoteEvent("MassRebirthEvent")
 newRemoteEvent("DataUpdateEvent")
 
 local function setupLeaderstats(player)

@@ -5,7 +5,6 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local EconomyUtil = require(script.Parent.EconomyUtil)
 local NumberFormat = require(ReplicatedStorage.Modules.NumberFormat)
-local GameConstants = require(ReplicatedStorage.Modules.GameConstants)
 
 local Replication = {}
 
@@ -31,8 +30,7 @@ function Replication.PushUpdate(player, state)
 		Multiplier = EconomyUtil.GetRebirthMultiplier(state.Rebirths),
 		ClickValue = EconomyUtil.GetClickValue(state),
 		IncomePerSecond = EconomyUtil.GetIncomePerSecond(state),
-		RebirthCost = EconomyUtil.GetRebirthCost(state.Rebirths),
-		CanMassRebirth = state.Money >= GameConstants.MASS_REBIRTH_UNLOCK_AMOUNT,
+		RebirthsAvailable = EconomyUtil.GetRebirthsForMoney(state.Money),
 	})
 end
 

@@ -1,5 +1,5 @@
 -- Pure economy math: upgrade costs, income totals, click value, and the
--- rebirth cost/multiplier curves. No state is stored here, only formulas,
+-- rebirth-count/multiplier formulas. No state is stored here, only formulas,
 -- so both the tick loop and the remote handlers can share one source of truth.
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -26,8 +26,8 @@ function EconomyUtil.GetRebirthMultiplier(rebirths)
 	return 1 + (rebirths * GameConstants.REBIRTH_MONEY_MULT_PER_REBIRTH)
 end
 
-function EconomyUtil.GetRebirthCost(rebirths)
-	return math.floor(GameConstants.REBIRTH_BASE_COST * (GameConstants.REBIRTH_COST_GROWTH ^ rebirths))
+function EconomyUtil.GetRebirthsForMoney(money)
+	return math.floor(money / GameConstants.REBIRTH_MONEY_PER_REBIRTH)
 end
 
 function EconomyUtil.GetClickValue(state)

@@ -13,13 +13,13 @@ behind games like this on Roblox.
    there's always another one worth saving for.
 3. Once you've saved **$1,000**, you can **Rebirth**: your money and
    upgrades reset to zero, but you permanently gain **+10% money from
-   everything** (clicks and passive income) for each rebirth. Each rebirth
-   after that costs 1.5x more than the last, so you keep saving for longer
-   between them — rebirth twice, three times, and so on.
-4. Once you've saved **$1,000,000**, a **Mass Rebirth** button unlocks:
-   spend the $1,000,000 to instantly gain **1,000 rebirths** at once (a huge
-   multiplier jump) instead of rebirthing one at a time. It's repeatable —
-   save another $1,000,000 and do it again.
+   everything** (clicks and passive income) for every rebirth you gain.
+4. The number of rebirths you get is **however much money you have, divided
+   by $1,000** — one button, one formula, no separate "bulk rebirth" action.
+   Cash in at exactly $1,000 for **1 rebirth**. Keep saving instead and cash
+   in at $2,000 for **2 rebirths** at once, or $1,000,000 for **1,000
+   rebirths** at once. The longer you hold off, the bigger the payoff —
+   that's the whole addictive tension of the loop.
 
 Progress (money, upgrade levels, rebirths) is saved per-player with
 `DataStoreService`, so players keep everything between sessions.
@@ -41,7 +41,7 @@ src/
     01_Bootstrap.server.lua       -- Script (remotes, leaderstats, income tick loop)
     02_ClickHandler.server.lua    -- Script (handles click requests)
     03_UpgradeHandler.server.lua  -- Script (handles upgrade purchases)
-    04_RebirthHandler.server.lua  -- Script (handles Rebirth + Mass Rebirth)
+    04_RebirthHandler.server.lua  -- Script (handles rebirthing)
     05_AutoSave.server.lua        -- Script (periodic background save)
   StarterPlayerScripts/
     01_UIBuilder.client.lua        -- LocalScript (builds the whole HUD)
@@ -99,12 +99,10 @@ Almost everything that controls the game's pacing lives in
 `GameConstants.lua`:
 
 - `BASE_CLICK_VALUE` — starting money per click.
-- `REBIRTH_BASE_COST` / `REBIRTH_COST_GROWTH` — cost of your 1st rebirth and
-  how much each subsequent one costs (1.5 = +50% per rebirth).
+- `REBIRTH_MONEY_PER_REBIRTH` — $ needed per rebirth; rebirths gained on cash-in
+  is `floor(Money / REBIRTH_MONEY_PER_REBIRTH)` (1000 = $1,000 per rebirth).
 - `REBIRTH_MONEY_MULT_PER_REBIRTH` — permanent money multiplier gained per
   rebirth (0.1 = +10%).
-- `MASS_REBIRTH_UNLOCK_AMOUNT` / `MASS_REBIRTH_COUNT` — the $1,000,000 →
-  1,000-rebirths milestone (reaching the amount spends all of it).
 
 The upgrade lineup (names, costs, how much money/sec or click power each one
 grants) lives in `UpgradeConfig.lua` — add a new entry there and it
@@ -119,7 +117,7 @@ file needs to change.
   cost/income math, client uses the same table to build and label the shop
   cards, so they can never drift out of sync.
 - **EconomyUtil** (server) — pure math: upgrade cost at a given level, total
-  income/sec, click value, and the rebirth cost/multiplier curves.
+  income/sec, click value, and the rebirth-count/multiplier formulas.
 - **PlayerDataStore** (server) — loads each player's saved state on join,
   keeps the authoritative in-memory table every handler mutates directly,
   and saves it on leave/autosave/server shutdown.
