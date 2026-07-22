@@ -1,32 +1,28 @@
-# Echobound
+# Rebirth Simulator
 
-A Roblox game about **recording loops of your own past self** and using them
-to hold the present together.
+A Roblox **click-to-earn rebirth simulator**: click a button for money, spend
+it on upgrades that boost your income, then **rebirth** to reset your
+progress in exchange for a permanent money multiplier — the classic loop
+behind games like this on Roblox.
 
-## The idea
+## The loop
 
-You're a Warden of Echoes, trapped in **The Fracture** — a memory that broke
-instead of fading, drained of all color. Press **R** to record up to 8
-seconds of your own movement. Press **R** again (or run out of Memory) and
-that recording becomes a glowing **Echo**: a translucent copy of you that
-loops the exact same actions forever. Echoes can hold pressure plates down
-while you walk away, letting you split yourself across a puzzle to solve it
-alone. Collect **Color Shards** to slowly restore the world's saturation from
-dead grey back to full color, and finally confront **The Hollow** — a boss
-that steals your last recorded Echo and throws it back at you as an attack.
-You damage it by covering three Resonance Pillars with Echoes simultaneously
-(the same trick from the puzzles, reused as a finale) or by unleashing a
-Color Pulse burst with **F**.
+1. **Click** the big button to earn money (starts at $1/click).
+2. **Buy upgrades** — some increase your click value, most add passive
+   income per second. Each upgrade gets ~7% more expensive per level, so
+   there's always another one worth saving for.
+3. Once you've saved **$1,000**, you can **Rebirth**: your money and
+   upgrades reset to zero, but you permanently gain **+10% money from
+   everything** (clicks and passive income) for each rebirth. Each rebirth
+   after that costs 1.5x more than the last, so you keep saving for longer
+   between them — rebirth twice, three times, and so on.
+4. Once you've saved **$1,000,000**, a **Mass Rebirth** button unlocks:
+   spend the $1,000,000 to instantly gain **1,000 rebirths** at once (a huge
+   multiplier jump) instead of rebirthing one at a time. It's repeatable —
+   save another $1,000,000 and do it again.
 
-It's a time-loop puzzle-platformer + boss fight, told through in-engine
-camera cutscenes with letterboxing and typewriter dialogue, all built from
-one self-contained set of scripts — **no manual level building required.**
-
-### Controls
-- **R** — start/stop recording an Echo
-- **X** — dismiss all your Echoes
-- **F** — Color Pulse (only useful near The Hollow, once you've collected shards)
-- **E** (default) — interact with Proximity Prompts (shards, the boss gate)
+Progress (money, upgrade levels, rebirths) is saved per-player with
+`DataStoreService`, so players keep everything between sessions.
 
 ## What's in this repo
 
@@ -34,106 +30,124 @@ one self-contained set of scripts — **no manual level building required.**
 src/
   ReplicatedStorage/
     Modules/
-      EchoConstants.lua        -- ModuleScript (shared tuning values)
+      GameConstants.lua   -- ModuleScript (all tunable numbers in one place)
+      UpgradeConfig.lua   -- ModuleScript (the list of upgrades, shared by client+server)
+      NumberFormat.lua    -- ModuleScript ($1.23K / $4.56M / $7.89B formatting)
   ServerScriptService/
     Modules/
-      PlayerState.lua          -- ModuleScript (server-only state)
-      OccupancyUtil.lua        -- ModuleScript (plate/pillar occupancy checks)
-    01_Bootstrap.server.lua        -- Script
-    02_LevelBuilder.server.lua     -- Script
-    03_EchoManager.server.lua      -- Script
-    04_PuzzleSystem.server.lua     -- Script
-    05_ColorRestoration.server.lua -- Script
-    06_BossHollow.server.lua       -- Script
-    07_NarrativeCutscenes.server.lua -- Script
+      EconomyUtil.lua      -- ModuleScript (cost/income/rebirth math)
+      PlayerDataStore.lua  -- ModuleScript (DataStore load/save + in-memory cache)
+      Replication.lua      -- ModuleScript (pushes state to leaderstats + client)
+    01_Bootstrap.server.lua       -- Script (remotes, leaderstats, income tick loop)
+    02_ClickHandler.server.lua    -- Script (handles click requests)
+    03_UpgradeHandler.server.lua  -- Script (handles upgrade purchases)
+    04_RebirthHandler.server.lua  -- Script (handles Rebirth + Mass Rebirth)
+    05_AutoSave.server.lua        -- Script (periodic background save)
   StarterPlayerScripts/
-    01_UIBuilder.client.lua          -- LocalScript
-    02_RecordingController.client.lua -- LocalScript
-    03_CutsceneController.client.lua  -- LocalScript
-    04_FeedbackController.client.lua  -- LocalScript
+    01_UIBuilder.client.lua        -- LocalScript (builds the whole HUD)
+    02_ClickController.client.lua  -- LocalScript (click button + top stat bar)
+    03_ShopController.client.lua   -- LocalScript (upgrade shop cards)
+    04_RebirthController.client.lua -- LocalScript (rebirth panel + confirm dialog)
 ```
 
-The `.server.lua` / `.client.lua` suffixes are just naming hints for you —
-in Studio you create the actual Instance type (`Script`, `LocalScript`, or
+The `.server.lua` / `.client.lua` suffixes are naming hints only — in Studio
+you create the actual Instance type (`Script`, `LocalScript`, or
 `ModuleScript`) as noted next to each file above.
 
 ## Setup in Roblox Studio (one-time)
 
-1. **Set the avatar type to R15** (Home tab → Game Settings → Avatar → R15),
-   so the built-in default animations play correctly on Echoes.
-2. In the **Explorer**, create this exact hierarchy and paste each file's
-   contents into the matching instance's `Source`:
+In the **Explorer**, create this exact hierarchy and paste each file's
+contents into the matching instance's `Source`:
 
-   - `ServerScriptService`
-     - `Script` named `01_Bootstrap` → paste `01_Bootstrap.server.lua`
-     - `Script` named `02_LevelBuilder` → paste `02_LevelBuilder.server.lua`
-     - `Script` named `03_EchoManager` → paste `03_EchoManager.server.lua`
-     - `Script` named `04_PuzzleSystem` → paste `04_PuzzleSystem.server.lua`
-     - `Script` named `05_ColorRestoration` → paste `05_ColorRestoration.server.lua`
-     - `Script` named `06_BossHollow` → paste `06_BossHollow.server.lua`
-     - `Script` named `07_NarrativeCutscenes` → paste `07_NarrativeCutscenes.server.lua`
-     - `Folder` named `Modules`
-       - `ModuleScript` named `PlayerState` → paste `PlayerState.lua`
-       - `ModuleScript` named `OccupancyUtil` → paste `OccupancyUtil.lua`
+- `ReplicatedStorage`
+  - `Folder` named `Modules`
+    - `ModuleScript` named `GameConstants` → paste `GameConstants.lua`
+    - `ModuleScript` named `UpgradeConfig` → paste `UpgradeConfig.lua`
+    - `ModuleScript` named `NumberFormat` → paste `NumberFormat.lua`
 
-   - `ReplicatedStorage`
-     - `Folder` named `Modules`
-       - `ModuleScript` named `EchoConstants` → paste `EchoConstants.lua`
+- `ServerScriptService`
+  - `Folder` named `Modules`
+    - `ModuleScript` named `EconomyUtil` → paste `EconomyUtil.lua`
+    - `ModuleScript` named `PlayerDataStore` → paste `PlayerDataStore.lua`
+    - `ModuleScript` named `Replication` → paste `Replication.lua`
+  - `Script` named `01_Bootstrap` → paste `01_Bootstrap.server.lua`
+  - `Script` named `02_ClickHandler` → paste `02_ClickHandler.server.lua`
+  - `Script` named `03_UpgradeHandler` → paste `03_UpgradeHandler.server.lua`
+  - `Script` named `04_RebirthHandler` → paste `04_RebirthHandler.server.lua`
+  - `Script` named `05_AutoSave` → paste `05_AutoSave.server.lua`
 
-   - `StarterPlayer` → `StarterPlayerScripts`
-     - `LocalScript` named `01_UIBuilder` → paste `01_UIBuilder.client.lua`
-     - `LocalScript` named `02_RecordingController` → paste `02_RecordingController.client.lua`
-     - `LocalScript` named `03_CutsceneController` → paste `03_CutsceneController.client.lua`
-     - `LocalScript` named `04_FeedbackController` → paste `04_FeedbackController.client.lua`
+- `StarterPlayer` → `StarterPlayerScripts`
+  - `LocalScript` named `01_UIBuilder` → paste `01_UIBuilder.client.lua`
+  - `LocalScript` named `02_ClickController` → paste `02_ClickController.client.lua`
+  - `LocalScript` named `03_ShopController` → paste `03_ShopController.client.lua`
+  - `LocalScript` named `04_RebirthController` → paste `04_RebirthController.client.lua`
 
-3. Delete the default `Baseplate` if you want (the LevelBuilder script
-   creates its own spawn platform, so it's not required, just tidy).
-4. Press **Play**. Everything else — RemoteEvents, the level geometry, the
-   puzzle rooms, the Color Shrine, the boss arena, all lighting/mood — is
-   generated automatically the moment the server starts.
+Then press **Play**. RemoteEvents, leaderstats, and the entire UI are all
+created automatically the moment the server starts — no manual GUI design
+or RemoteEvent wiring needed.
 
-No manual part placement, no manual tagging, no manual RemoteEvent creation.
-Just the 10 script instances above.
+**Note on testing DataStores:** `DataStoreService` doesn't work in Studio's
+offline Play mode by default. In Studio, go to **Game Settings → Security**
+and enable **Studio Access to API Services**, or test via **Publish to
+Roblox** and playing the live game, to see saving/loading actually work.
+Without that enabled, saves will silently fail (caught by the `pcall` in
+`PlayerDataStore.lua`) and progress will reset each session.
+
+## Tuning the game
+
+Almost everything that controls the game's pacing lives in
+`GameConstants.lua`:
+
+- `BASE_CLICK_VALUE` — starting money per click.
+- `REBIRTH_BASE_COST` / `REBIRTH_COST_GROWTH` — cost of your 1st rebirth and
+  how much each subsequent one costs (1.5 = +50% per rebirth).
+- `REBIRTH_MONEY_MULT_PER_REBIRTH` — permanent money multiplier gained per
+  rebirth (0.1 = +10%).
+- `MASS_REBIRTH_UNLOCK_AMOUNT` / `MASS_REBIRTH_COUNT` — the $1,000,000 →
+  1,000-rebirths milestone (reaching the amount spends all of it).
+
+The upgrade lineup (names, costs, how much money/sec or click power each one
+grants) lives in `UpgradeConfig.lua` — add a new entry there and it
+automatically appears in the shop UI and counts toward income, no other
+file needs to change.
 
 ## How the systems fit together
 
-- **EchoConstants** (`ReplicatedStorage`) — single source of truth for
-  timing/limits, required by both server and client code.
-- **Bootstrap** — creates all `RemoteEvent`s under `ReplicatedStorage.Remotes`,
-  workspace folders (`Echoes`, `Level`, `VFX`), leaderstats, and the
-  desaturated mood lighting (`ColorCorrectionEffect` + `Atmosphere`).
-- **LevelBuilder** — procedurally builds the spawn area, two Echo puzzle
-  rooms, the Color Shrine (3 shards), the boss gate, and the arena
-  (3 Resonance Pillars), tagging everything via `CollectionService` so the
-  other systems just need to listen for tags — no manual wiring.
-- **EchoManager** — validates client-recorded frames, clones the player's
-  character into an anchored "ghost" puppet, and drives it every frame with
-  `Model:PivotTo()` interpolated between recorded samples, switching between
-  Idle/Walk `AnimationTrack`s based on movement speed.
-- **PuzzleSystem** — generic: any `PressurePlate`/`PressureDoor` pair
-  sharing a `GroupId` attribute opens the door once every plate in the group
-  is occupied by the player or an Echo.
-- **ColorRestoration** — shard pickups increment a saturation tween on the
-  global `ColorCorrectionEffect` and add "Color Pulse" charge.
-- **BossHollow** — builds and procedurally animates The Hollow (bobbing
-  core + orbiting tendrils, no rig needed), runs its 3-phase attack pattern
-  (shadow bolts → Echo Mimic replay of your own last recording → telegraphed
-  arena pulses), and resolves damage from pillar coverage or Color Pulses.
-- **NarrativeCutscenes** / **CutsceneController** — server sends a list of
-  `{cframe, time, speaker, text}` waypoints; the client tweens the camera
-  through them with letterbox bars and typewriter dialogue, then returns
-  control to the player.
-- **UIBuilder** / **RecordingController** / **FeedbackController** — all UI
-  is built at runtime (no manual `ScreenGui` design needed) and kept in sync
-  purely through `WaitForChild`, so load order between LocalScripts never
-  matters.
+- **GameConstants** — single source of truth for every tunable number,
+  required by both server and client code.
+- **UpgradeConfig** — the shop's contents; server uses it for authoritative
+  cost/income math, client uses the same table to build and label the shop
+  cards, so they can never drift out of sync.
+- **EconomyUtil** (server) — pure math: upgrade cost at a given level, total
+  income/sec, click value, and the rebirth cost/multiplier curves.
+- **PlayerDataStore** (server) — loads each player's saved state on join,
+  keeps the authoritative in-memory table every handler mutates directly,
+  and saves it on leave/autosave/server shutdown.
+- **Replication** (server) — the only place that pushes a player's state to
+  their leaderstats and `DataUpdateEvent`, so every handler reports state
+  the same way.
+- **Bootstrap** — creates all `RemoteEvent`s under `ReplicatedStorage.Remotes`
+  and `leaderstats` (`Rebirths`, `Cash`), loads/saves data on join/leave, and
+  runs the once-per-second passive income loop.
+- **ClickHandler** / **UpgradeHandler** / **RebirthHandler** — validate and
+  apply one specific player action each, always recomputing cost/afford
+  checks server-side (the client is never trusted).
+- **UIBuilder** — builds the whole HUD (top stat bar, click button, shop
+  panel, rebirth panel) at runtime; every other LocalScript finds pieces of
+  it by name via `WaitForChild`, so load order never matters.
+- **ClickController** / **ShopController** / **RebirthController** — each
+  owns one part of the HUD, all independently listening to the same
+  `DataUpdateEvent` to stay in sync.
 
 ## Extending it
 
-Everything is tag- and attribute-driven, so adding content doesn't require
-touching the systems:
-- New puzzle: add parts tagged `PressurePlate`/`PressureDoor` sharing a new
-  `GroupId` attribute in `LevelBuilder` (or even from a plugin/command bar).
-- New shard: tag any part `ColorShard` and give it a `ProximityPrompt`.
-- Raise `EchoConstants.MAX_ECHOES_PER_PLAYER` or add an upgrade shard that
-  calls `PlayerState` to grant more echoes mid-run.
+- **New upgrade:** add one entry to `UpgradeConfig.lua` (`Id`, `Name`,
+  `Description`, `BaseCost`, `CostGrowth`, `Effect`, `Type`). It shows up in
+  the shop automatically.
+- **Rebirth perks beyond a money multiplier** (e.g. unlocking new upgrades
+  at certain rebirth counts): check `state.Rebirths` in `EconomyUtil` or add
+  a `MinRebirths` field to upgrade entries and filter in `UpgradeConfig`-aware
+  code.
+- **Gamepasses / boosts:** multiply the value returned by
+  `EconomyUtil.GetClickValue` / `GetIncomePerSecond` by an extra factor
+  looked up from `MarketplaceService:UserOwnsGamePassAsync`.
