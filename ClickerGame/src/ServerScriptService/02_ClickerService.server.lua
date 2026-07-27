@@ -20,6 +20,11 @@ local function pushStats(player, state)
 	statsUpdate:FireClient(player, PlayerState.BuildPayload(state))
 end
 
+local allowedSellPercents = {}
+for _, percent in ipairs(ClickerConstants.SELL_PERCENT_OPTIONS) do
+	allowedSellPercents[percent] = true
+end
+
 clickRequest.OnServerEvent:Connect(function(player)
 	local state = PlayerState.Get(player)
 	if not state then
@@ -36,14 +41,23 @@ clickRequest.OnServerEvent:Connect(function(player)
 	pushStats(player, state)
 end)
 
-sellRequest.OnServerEvent:Connect(function(player)
+sellRequest.OnServerEvent:Connect(function(player, percent)
 	local state = PlayerState.Get(player)
 	if not state or state.Clicks <= 0 then
 		return
 	end
 
-	state.Money += state.Clicks
-	state.Clicks = 0
+	if not allowedSellPercents[percent] then
+		return
+	end
+
+	local amountToSell = math.floor(state.Clicks * percent)
+	if amountToSell <= 0 then
+		return
+	end
+
+	state.Money += amountToSell
+	state.Clicks -= amountToSell
 	pushStats(player, state)
 end)
 

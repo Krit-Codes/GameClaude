@@ -4,7 +4,8 @@ The core loop, with no GUI included on purpose — you build the interface,
 this is just the system underneath it:
 
 1. **Click** → adds `ClickPower` to your `Clicks` counter.
-2. **Sell** → converts all of your `Clicks` into `Money` (1:1).
+2. **Sell** → converts a chosen percentage (10%/25%/50%/100%) of your
+   `Clicks` into `Money` (1:1).
 3. **Upgrade** → spend `Money` to permanently raise `ClickPower` for this
    life (cost rises each purchase).
 4. **Rebirth** → once `Money >= 1000`, reset `Clicks`/`Money`/upgrades, but:
@@ -58,7 +59,10 @@ From any `LocalScript` inside your GUI:
 local ClickerClient = require(game.ReplicatedStorage.Modules.ClickerClient)
 
 clickButton.Activated:Connect(ClickerClient.Click)
-sellButton.Activated:Connect(ClickerClient.Sell)
+sell10Button.Activated:Connect(function() ClickerClient.Sell(0.10) end)
+sell25Button.Activated:Connect(function() ClickerClient.Sell(0.25) end)
+sell50Button.Activated:Connect(function() ClickerClient.Sell(0.50) end)
+sell100Button.Activated:Connect(function() ClickerClient.Sell(1.00) end)
 upgradeButton.Activated:Connect(ClickerClient.BuyUpgrade)
 rebirthButton.Activated:Connect(ClickerClient.Rebirth)
 

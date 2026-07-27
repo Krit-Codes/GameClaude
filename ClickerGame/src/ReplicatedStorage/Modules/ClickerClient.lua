@@ -53,8 +53,10 @@ function ClickerClient.Click()
 	clickRequest:FireServer()
 end
 
-function ClickerClient.Sell()
-	sellRequest:FireServer()
+-- percent must be one of ClickerConstants.SELL_PERCENT_OPTIONS (0.10, 0.25,
+-- 0.50, 1.00) -- the server rejects anything else.
+function ClickerClient.Sell(percent)
+	sellRequest:FireServer(percent)
 end
 
 function ClickerClient.BuyUpgrade()
