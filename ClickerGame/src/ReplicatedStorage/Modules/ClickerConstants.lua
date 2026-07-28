@@ -19,4 +19,8 @@ ClickerConstants.MIN_CLICK_INTERVAL = 0.05 -- seconds, ~20 clicks/sec cap
 -- The server only accepts one of these exact values from SellRequest.
 ClickerConstants.SELL_PERCENT_OPTIONS = { 0.10, 0.25, 0.50, 1.00 }
 
+-- Hard safety cap on how many levels a single "Max" upgrade purchase can
+-- loop through, so a bugged/exploited request can't hang the server.
+ClickerConstants.MAX_UPGRADE_PURCHASE_SAFETY_CAP = 100000
+
 return ClickerConstants

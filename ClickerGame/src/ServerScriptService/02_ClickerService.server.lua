@@ -61,19 +61,39 @@ sellRequest.OnServerEvent:Connect(function(player, percent)
 	pushStats(player, state)
 end)
 
-buyUpgradeRequest.OnServerEvent:Connect(function(player)
+-- amount is either a positive integer (buy up to that many levels, limited
+-- by what's affordable) or the string "Max" (buy as many as affordable).
+buyUpgradeRequest.OnServerEvent:Connect(function(player, amount)
 	local state = PlayerState.Get(player)
 	if not state then
 		return
 	end
 
-	local cost = PlayerState.ComputeUpgradeCost(state)
-	if state.Money < cost then
+	local purchaseLimit
+	if amount == "Max" then
+		purchaseLimit = ClickerConstants.MAX_UPGRADE_PURCHASE_SAFETY_CAP
+	elseif type(amount) == "number" and amount >= 1 then
+		purchaseLimit = math.floor(amount)
+	else
 		return
 	end
 
-	state.Money -= cost
-	state.UpgradeLevel += 1
+	local purchased = 0
+	for _ = 1, purchaseLimit do
+		local cost = PlayerState.ComputeUpgradeCost(state)
+		if state.Money < cost then
+			break
+		end
+
+		state.Money -= cost
+		state.UpgradeLevel += 1
+		purchased += 1
+	end
+
+	if purchased <= 0 then
+		return
+	end
+
 	PlayerState.RecomputeClickPower(player)
 	pushStats(player, state)
 end)

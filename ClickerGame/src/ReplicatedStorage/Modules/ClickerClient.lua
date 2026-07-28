@@ -59,8 +59,10 @@ function ClickerClient.Sell(percent)
 	sellRequest:FireServer(percent)
 end
 
-function ClickerClient.BuyUpgrade()
-	buyUpgradeRequest:FireServer()
+-- amount is a positive integer (buy up to that many levels, limited by
+-- what's affordable) or the string "Max" (buy as many as affordable).
+function ClickerClient.BuyUpgrade(amount)
+	buyUpgradeRequest:FireServer(amount)
 end
 
 function ClickerClient.Rebirth()
