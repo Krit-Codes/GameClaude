@@ -46,6 +46,8 @@ src/
     05_ColorRestoration.server.lua -- Script
     06_BossHollow.server.lua       -- Script
     07_NarrativeCutscenes.server.lua -- Script
+    08_FlingSystem.server.lua      -- Script
+    09_WalkSpeedBooster.server.lua -- Script
   StarterPlayerScripts/
     01_UIBuilder.client.lua          -- LocalScript
     02_RecordingController.client.lua -- LocalScript
@@ -72,6 +74,8 @@ in Studio you create the actual Instance type (`Script`, `LocalScript`, or
      - `Script` named `05_ColorRestoration` → paste `05_ColorRestoration.server.lua`
      - `Script` named `06_BossHollow` → paste `06_BossHollow.server.lua`
      - `Script` named `07_NarrativeCutscenes` → paste `07_NarrativeCutscenes.server.lua`
+     - `Script` named `08_FlingSystem` → paste `08_FlingSystem.server.lua`
+     - `Script` named `09_WalkSpeedBooster` → paste `09_WalkSpeedBooster.server.lua`
      - `Folder` named `Modules`
        - `ModuleScript` named `PlayerState` → paste `PlayerState.lua`
        - `ModuleScript` named `OccupancyUtil` → paste `OccupancyUtil.lua`
@@ -93,7 +97,7 @@ in Studio you create the actual Instance type (`Script`, `LocalScript`, or
    generated automatically the moment the server starts.
 
 No manual part placement, no manual tagging, no manual RemoteEvent creation.
-Just the 10 script instances above.
+Just the 12 script instances above.
 
 ## How the systems fit together
 
@@ -119,6 +123,12 @@ Just the 10 script instances above.
   core + orbiting tendrils, no rig needed), runs its 3-phase attack pattern
   (shadow bolts → Echo Mimic replay of your own last recording → telegraphed
   arena pulses), and resolves damage from pillar coverage or Color Pulses.
+- **FlingSystem** — checks every pair of players each frame and, when two
+  characters get within `FLING_RANGE` studs of each other, launches both
+  apart with an opposite horizontal + upward velocity impulse (with a
+  per-pair cooldown so it doesn't spam).
+- **WalkSpeedBooster** — sets every player's `Humanoid.WalkSpeed` to
+  `WALK_SPEED` (32 by default, vs. the Roblox default of 16) on spawn.
 - **NarrativeCutscenes** / **CutsceneController** — server sends a list of
   `{cframe, time, speaker, text}` waypoints; the client tweens the camera
   through them with letterbox bars and typewriter dialogue, then returns
