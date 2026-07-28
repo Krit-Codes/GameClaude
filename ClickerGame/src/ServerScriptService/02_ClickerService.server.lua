@@ -51,7 +51,7 @@ sellRequest.OnServerEvent:Connect(function(player, percent)
 		return
 	end
 
-	local amountToSell = math.floor(state.Clicks * percent)
+	local amountToSell = state.Clicks * percent
 	if amountToSell <= 0 then
 		return
 	end
