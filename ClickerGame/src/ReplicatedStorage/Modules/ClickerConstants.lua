@@ -2,10 +2,11 @@ local ClickerConstants = {}
 
 ClickerConstants.BASE_CLICK_POWER = 1
 
--- Repeatable "Click Power" upgrade, bought with Money
+-- Repeatable "Click Power" upgrade, bought with Money.
+-- Cost grows linearly: level N costs UPGRADE_BASE_COST + UPGRADE_COST_STEP * N.
 ClickerConstants.UPGRADE_BASE_COST = 10
-ClickerConstants.UPGRADE_COST_MULTIPLIER = 1.15
-ClickerConstants.UPGRADE_POWER_INCREMENT = 1
+ClickerConstants.UPGRADE_COST_STEP = 34 -- +34 coins per level bought
+ClickerConstants.UPGRADE_POWER_INCREMENT = 0.34 -- +0.34 click power per level bought
 
 -- Rebirth
 ClickerConstants.REBIRTH_MONEY_DIVISOR = 1000 -- Money / this = Rebirths gained

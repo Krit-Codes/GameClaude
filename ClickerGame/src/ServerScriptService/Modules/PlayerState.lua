@@ -20,7 +20,7 @@ local function computeClickPower(state)
 end
 
 local function computeUpgradeCost(state)
-	return math.floor(ClickerConstants.UPGRADE_BASE_COST * (ClickerConstants.UPGRADE_COST_MULTIPLIER ^ state.UpgradeLevel))
+	return ClickerConstants.UPGRADE_BASE_COST + (ClickerConstants.UPGRADE_COST_STEP * state.UpgradeLevel)
 end
 
 PlayerState.ComputeClickPower = computeClickPower
