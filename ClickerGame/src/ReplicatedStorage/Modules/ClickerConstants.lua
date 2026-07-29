@@ -24,13 +24,13 @@ ClickerConstants.SELL_PERCENT_OPTIONS = { 0.10, 0.25, 0.50, 1.00 }
 -- loop through, so a bugged/exploited request can't hang the server.
 ClickerConstants.MAX_UPGRADE_PURCHASE_SAFETY_CAP = 100000
 
--- Game Passes that instantly grant upgrade levels for Robux (one-time per
--- player). Replace these placeholder IDs with your real Game Pass IDs from
--- the Creator Dashboard. Keyed by how many upgrade levels the pass grants.
-ClickerConstants.UPGRADE_GAME_PASS_IDS = {
-	[1] = 0,  -- Upgrade1Robux -- replace with your real Game Pass ID
-	[5] = 0,  -- Upgrade5Robux -- replace with your real Game Pass ID
-	[10] = 0, -- Upgrade10Robux -- replace with your real Game Pass ID
+-- Developer Products that instantly grant upgrade levels for Robux.
+-- Repeatable -- buying one again grants that many levels again. Keyed by
+-- how many upgrade levels each product grants.
+ClickerConstants.UPGRADE_PRODUCT_IDS = {
+	[1] = 3612208343,  -- Upgrade1Robux
+	[5] = 3612208409,  -- Upgrade5Robux
+	[10] = 3612208455, -- Upgrade10Robux
 }
 
 return ClickerConstants
