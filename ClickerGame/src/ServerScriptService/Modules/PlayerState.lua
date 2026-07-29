@@ -32,6 +32,7 @@ function PlayerState.Load(player)
 		Money = 0,
 		Rebirths = 0,
 		UpgradeLevel = 0,
+		ClaimedGamePasses = {},
 	}
 
 	local saved
@@ -43,6 +44,7 @@ function PlayerState.Load(player)
 	end
 
 	local state = saved or default
+	state.ClaimedGamePasses = state.ClaimedGamePasses or {}
 	state.ClickPower = computeClickPower(state)
 	state.LastClickTime = 0
 	PlayerState._data[player] = state
@@ -61,6 +63,7 @@ function PlayerState.Save(player)
 			Money = state.Money,
 			Rebirths = state.Rebirths,
 			UpgradeLevel = state.UpgradeLevel,
+			ClaimedGamePasses = state.ClaimedGamePasses,
 		})
 	end)
 	if not ok then
