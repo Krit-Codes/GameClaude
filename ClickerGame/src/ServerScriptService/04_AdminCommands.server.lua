@@ -3,7 +3,9 @@
 -- /<amount> speed <player>, /<amount> jump <player>, /lowgravity,
 -- /gamepassgive <name> <player>, /kick <player> [reason], /kill <player>,
 -- /heal <player>, /rebirth <player>, /reset <player>, /save <player>,
--- /music on|off.
+-- /music on|off, /bighead <player>, /giant <player>, /tiny <player>,
+-- /launch <player>, /rainbow <player>, /spin <player>, /ghost <player>,
+-- /firework <player>, /disco, /earthquake.
 --
 -- Security: the Player argument on OnServerEvent is provided by Roblox
 -- itself and cannot be spoofed by the client, so checking player.Name here
@@ -13,6 +15,7 @@ local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
 local Workspace = game:GetService("Workspace")
+local Lighting = game:GetService("Lighting")
 
 local AdminConstants = require(ReplicatedStorage.Modules.AdminConstants)
 local PlayerState = require(ServerScriptService.Modules.PlayerState)
@@ -34,6 +37,10 @@ announcementRemote.Parent = adminRemotesFolder
 local forceMusicRemote = Instance.new("RemoteEvent")
 forceMusicRemote.Name = "ForceMusic"
 forceMusicRemote.Parent = adminRemotesFolder
+
+local earthquakeRemote = Instance.new("RemoteEvent")
+earthquakeRemote.Name = "Earthquake"
+earthquakeRemote.Parent = adminRemotesFolder
 
 local isAdminFunction = Instance.new("RemoteFunction")
 isAdminFunction.Name = "IsAdmin"
@@ -199,6 +206,194 @@ local function handleLowGravity()
 	end
 end
 
+local function getCharacterParts(character)
+	local parts = {}
+	for _, descendant in ipairs(character:GetDescendants()) do
+		if descendant:IsA("BasePart") then
+			table.insert(parts, descendant)
+		end
+	end
+	return parts
+end
+
+local function setBodyScale(humanoid, scale)
+	humanoid.HeadScale = scale
+	humanoid.BodyWidthScale = scale
+	humanoid.BodyHeightScale = scale
+	humanoid.BodyDepthScale = scale
+end
+
+local function handleBigHead(targetName)
+	local targetPlayer = findPlayerByName(targetName)
+	if not targetPlayer then
+		return
+	end
+	local humanoid = getHumanoid(targetPlayer)
+	if not humanoid then
+		return
+	end
+	humanoid.HeadScale = humanoid.HeadScale > 1.5 and 1 or 3
+end
+
+local function handleGiant(targetName)
+	local targetPlayer = findPlayerByName(targetName)
+	if not targetPlayer then
+		return
+	end
+	local humanoid = getHumanoid(targetPlayer)
+	if not humanoid then
+		return
+	end
+	setBodyScale(humanoid, humanoid.BodyHeightScale > 1.5 and 1 or 2.5)
+end
+
+local function handleTiny(targetName)
+	local targetPlayer = findPlayerByName(targetName)
+	if not targetPlayer then
+		return
+	end
+	local humanoid = getHumanoid(targetPlayer)
+	if not humanoid then
+		return
+	end
+	setBodyScale(humanoid, humanoid.BodyHeightScale < 0.7 and 1 or 0.4)
+end
+
+local function handleLaunch(targetName)
+	local targetPlayer = findPlayerByName(targetName)
+	if not targetPlayer then
+		return
+	end
+	local character = targetPlayer.Character
+	local rootPart = character and character:FindFirstChild("HumanoidRootPart")
+	if not rootPart then
+		return
+	end
+	rootPart.AssemblyLinearVelocity = Vector3.new(0, 120, 0)
+end
+
+-- [UserId] = true while the loop should keep running, toggled off to stop it
+local rainbowActive = {}
+local spinActive = {}
+local ghostActive = {}
+
+local function handleRainbow(targetName)
+	local targetPlayer = findPlayerByName(targetName)
+	if not targetPlayer then
+		return
+	end
+	local userId = targetPlayer.UserId
+
+	if rainbowActive[userId] then
+		rainbowActive[userId] = false
+		return
+	end
+
+	rainbowActive[userId] = true
+	task.spawn(function()
+		local hue = 0
+		while rainbowActive[userId] do
+			local character = targetPlayer.Character
+			if character then
+				local color = Color3.fromHSV(hue, 1, 1)
+				for _, part in ipairs(getCharacterParts(character)) do
+					part.Color = color
+				end
+			end
+			hue = (hue + 0.02) % 1
+			task.wait(0.05)
+		end
+	end)
+end
+
+local function handleSpin(targetName)
+	local targetPlayer = findPlayerByName(targetName)
+	if not targetPlayer then
+		return
+	end
+	local userId = targetPlayer.UserId
+
+	if spinActive[userId] then
+		spinActive[userId] = false
+		return
+	end
+
+	spinActive[userId] = true
+	task.spawn(function()
+		while spinActive[userId] do
+			local character = targetPlayer.Character
+			local rootPart = character and character:FindFirstChild("HumanoidRootPart")
+			if rootPart then
+				rootPart.CFrame = rootPart.CFrame * CFrame.Angles(0, math.rad(10), 0)
+			end
+			task.wait()
+		end
+	end)
+end
+
+local function handleGhost(targetName)
+	local targetPlayer = findPlayerByName(targetName)
+	if not targetPlayer then
+		return
+	end
+	local character = targetPlayer.Character
+	if not character then
+		return
+	end
+
+	local userId = targetPlayer.UserId
+	ghostActive[userId] = not ghostActive[userId]
+	local isGhost = ghostActive[userId]
+
+	for _, part in ipairs(getCharacterParts(character)) do
+		part.Transparency = isGhost and 0.6 or 0
+		part.CanCollide = not isGhost
+	end
+end
+
+local function handleFirework(targetName)
+	local targetPlayer = findPlayerByName(targetName)
+	if not targetPlayer then
+		return
+	end
+	local character = targetPlayer.Character
+	local rootPart = character and character:FindFirstChild("HumanoidRootPart")
+	if not rootPart then
+		return
+	end
+
+	local explosion = Instance.new("Explosion")
+	explosion.Position = rootPart.Position + Vector3.new(0, 5, 0)
+	explosion.BlastRadius = 0
+	explosion.BlastPressure = 0
+	explosion.Parent = Workspace
+end
+
+local discoActive = false
+
+local function handleDisco()
+	discoActive = not discoActive
+	if not discoActive then
+		Lighting.Ambient = Color3.new(0, 0, 0)
+		Lighting.ColorShift_Top = Color3.new(0, 0, 0)
+		return
+	end
+
+	task.spawn(function()
+		while discoActive do
+			Lighting.Ambient = Color3.fromHSV(math.random(), 1, 1)
+			Lighting.ColorShift_Top = Color3.fromHSV(math.random(), 1, 1)
+			task.wait(0.3)
+		end
+		Lighting.Ambient = Color3.new(0, 0, 0)
+		Lighting.ColorShift_Top = Color3.new(0, 0, 0)
+	end)
+end
+
+local function handleEarthquake()
+	earthquakeRemote:FireAllClients()
+end
+
 local function handleGamepassGive(gamepassName, targetName)
 	if not gamepassName then
 		return
@@ -260,6 +455,26 @@ adminCommandRemote.OnServerEvent:Connect(function(player, rawText)
 		handleSave(parts[2])
 	elseif commandWord == "music" then
 		handleMusic(parts[2])
+	elseif commandWord == "bighead" then
+		handleBigHead(parts[2])
+	elseif commandWord == "giant" then
+		handleGiant(parts[2])
+	elseif commandWord == "tiny" then
+		handleTiny(parts[2])
+	elseif commandWord == "launch" then
+		handleLaunch(parts[2])
+	elseif commandWord == "rainbow" then
+		handleRainbow(parts[2])
+	elseif commandWord == "spin" then
+		handleSpin(parts[2])
+	elseif commandWord == "ghost" then
+		handleGhost(parts[2])
+	elseif commandWord == "firework" then
+		handleFirework(parts[2])
+	elseif commandWord == "disco" then
+		handleDisco()
+	elseif commandWord == "earthquake" then
+		handleEarthquake()
 	elseif tonumber(commandWord) then
 		local amount = tonumber(commandWord)
 		local kind = parts[2]
