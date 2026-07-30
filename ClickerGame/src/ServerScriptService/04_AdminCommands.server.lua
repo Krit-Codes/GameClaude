@@ -1,6 +1,6 @@
 -- Script. Handles admin-only commands typed into the admin panel:
 -- /announce <message>, /<amount> click <player>, /<amount> coins <player>,
--- /<amount> speed <player>, /<amount> jump <player>, /0gravity,
+-- /<amount> speed <player>, /<amount> jump <player>, /lowgravity,
 -- /gamepassgive <name> <player>, /kick <player> [reason], /kill <player>,
 -- /heal <player>, /rebirth <player>, /reset <player>, /save <player>,
 -- /music on|off.
@@ -191,11 +191,11 @@ local function handleMusic(state)
 	end
 end
 
-local function handleZeroGravity()
-	if Workspace.Gravity == 0 then
+local function handleLowGravity()
+	if Workspace.Gravity == AdminConstants.LOW_GRAVITY then
 		Workspace.Gravity = AdminConstants.DEFAULT_GRAVITY
 	else
-		Workspace.Gravity = 0
+		Workspace.Gravity = AdminConstants.LOW_GRAVITY
 	end
 end
 
@@ -242,8 +242,8 @@ adminCommandRemote.OnServerEvent:Connect(function(player, rawText)
 
 	if commandWord == "announce" then
 		handleAnnounce(parts)
-	elseif commandWord == "0gravity" then
-		handleZeroGravity()
+	elseif commandWord == "lowgravity" then
+		handleLowGravity()
 	elseif commandWord == "gamepassgive" then
 		handleGamepassGive(parts[2], parts[3])
 	elseif commandWord == "kick" then

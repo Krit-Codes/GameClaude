@@ -6,6 +6,7 @@ local AdminConstants = {}
 AdminConstants.ADMIN_USERNAME = "blxfruits1232"
 
 AdminConstants.DEFAULT_GRAVITY = 196.2
+AdminConstants.LOW_GRAVITY = 50 -- used by /lowgravity, adjust to taste
 
 -- Named grants usable via "/gamepassgive <Name> <Player>" (case-insensitive
 -- keys). Each maps to how many upgrade levels to instantly grant. Add more
