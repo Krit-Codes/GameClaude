@@ -65,8 +65,10 @@ function ClickerClient.BuyUpgrade(amount)
 	buyUpgradeRequest:FireServer(amount)
 end
 
-function ClickerClient.Rebirth()
-	rebirthRequest:FireServer()
+-- amount is one of ClickerConstants.REBIRTH_TIER_AMOUNTS (1, 5, or 10) or
+-- the string "Max" (convert all eligible Money into Rebirths).
+function ClickerClient.Rebirth(amount)
+	rebirthRequest:FireServer(amount)
 end
 
 return ClickerClient

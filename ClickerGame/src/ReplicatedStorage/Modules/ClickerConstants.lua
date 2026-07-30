@@ -8,10 +8,16 @@ ClickerConstants.UPGRADE_BASE_COST = 10
 ClickerConstants.UPGRADE_COST_STEP = 34 -- +34 coins per level bought
 ClickerConstants.UPGRADE_POWER_INCREMENT = 0.34 -- +0.34 click power per level bought
 
--- Rebirth
-ClickerConstants.REBIRTH_MONEY_DIVISOR = 1000 -- Money / this = Rebirths gained
+-- Rebirth. Costs a flat REBIRTH_MONEY_DIVISOR coins per Rebirth (10,000
+-- coins = 1 Rebirth, 50,000 = 5, 100,000 = 10, etc.) -- no cost scaling,
+-- unlike the coin upgrades.
+ClickerConstants.REBIRTH_MONEY_DIVISOR = 10000 -- Money / this = Rebirths gained
 ClickerConstants.REBIRTH_FLAT_CLICK_BONUS = 1 -- +1 click power per Rebirth
 ClickerConstants.REBIRTH_MULTIPLIER_PER_REBIRTH = 2 -- 2x click power per Rebirth
+
+-- Whitelisted fixed Rebirth tiers (the server only accepts one of these
+-- exact amounts, or the string "Max", from RebirthRequest).
+ClickerConstants.REBIRTH_TIER_AMOUNTS = { [1] = true, [5] = true, [10] = true }
 
 -- Basic anti-exploit throttle for the click remote
 ClickerConstants.MIN_CLICK_INTERVAL = 0.05 -- seconds, ~20 clicks/sec cap
