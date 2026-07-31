@@ -98,8 +98,9 @@ buyUpgradeRequest.OnServerEvent:Connect(function(player, amount)
 	pushStats(player, state)
 end)
 
--- amount is one of ClickerConstants.REBIRTH_TIER_AMOUNTS (1, 5, or 10) for a
--- fixed-tier rebirth, or the string "Max" to convert all eligible Money.
+-- amount is any positive integer number of Rebirths (a fixed tier button,
+-- e.g. 1/5/10/50/250/1000), or the string "Max" to convert all eligible
+-- Money.
 rebirthRequest.OnServerEvent:Connect(function(player, amount)
 	local state = PlayerState.Get(player)
 	if not state then
@@ -109,7 +110,7 @@ rebirthRequest.OnServerEvent:Connect(function(player, amount)
 	local rebirthGain
 	if amount == "Max" then
 		rebirthGain = math.floor(state.Money / ClickerConstants.REBIRTH_MONEY_DIVISOR)
-	elseif ClickerConstants.REBIRTH_TIER_AMOUNTS[amount] then
+	elseif type(amount) == "number" and amount >= 1 and amount == math.floor(amount) then
 		rebirthGain = amount
 	else
 		return

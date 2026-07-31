@@ -15,10 +15,6 @@ ClickerConstants.REBIRTH_MONEY_DIVISOR = 10000 -- Money / this = Rebirths gained
 ClickerConstants.REBIRTH_FLAT_CLICK_BONUS = 1 -- +1 click power per Rebirth
 ClickerConstants.REBIRTH_MULTIPLIER_PER_REBIRTH = 2 -- 2x click power per Rebirth
 
--- Whitelisted fixed Rebirth tiers (the server only accepts one of these
--- exact amounts, or the string "Max", from RebirthRequest).
-ClickerConstants.REBIRTH_TIER_AMOUNTS = { [1] = true, [5] = true, [10] = true }
-
 -- Basic anti-exploit throttle for the click remote
 ClickerConstants.MIN_CLICK_INTERVAL = 0.05 -- seconds, ~20 clicks/sec cap
 
