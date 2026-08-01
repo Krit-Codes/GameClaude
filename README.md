@@ -128,6 +128,34 @@ Just the 10 script instances above.
   purely through `WaitForChild`, so load order between LocalScripts never
   matters.
 
+## EchoScript: a custom scripting language for content
+
+This repo also includes **EchoScript**, a small scripting language built
+from scratch (lexer, parser, tree-walking interpreter — no external
+dependencies) so cutscene beats, dialogue, and simple triggers can be
+authored as text instead of hand-written Lua tables. It's fully documented
+in [`docs/EchoScript.md`](docs/EchoScript.md), with a worked example at
+[`examples/intro_cutscene.echo`](examples/intro_cutscene.echo) that
+reimplements the intro cutscene's waypoint list as an EchoScript.
+
+It lives at `src/ReplicatedStorage/Modules/EchoScript/` (4 ModuleScripts:
+`Lexer`, `Parser`, `Interpreter`, `EchoScript`) and has a standalone test
+suite (`tests/echoscript/run_tests.lua`, runnable with any Lua 5.1+
+interpreter, no Roblox Studio needed):
+
+```
+lua5.4 tests/echoscript/run_tests.lua
+```
+
+This is **optional** — the game runs fine without it. If you want to see it
+execute live in Studio, also create:
+- `ReplicatedStorage` → `Folder` named `Modules` → `Folder` named
+  `EchoScript`, containing 4 `ModuleScript`s named `Lexer`, `Parser`,
+  `Interpreter`, and `EchoScript`, pasted from the matching files above.
+- `ServerScriptService` → `Script` named `08_EchoScriptDemo`, pasted from
+  `08_EchoScriptDemo.server.lua` — prints a sample cutscene run to the
+  server output on start.
+
 ## Extending it
 
 Everything is tag- and attribute-driven, so adding content doesn't require
