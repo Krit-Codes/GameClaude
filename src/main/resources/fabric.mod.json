@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "id": "umbra",
+  "version": "${version}",
+  "name": "Umbra Client",
+  "description": "Utility client for anarchy servers.",
+  "authors": ["you"],
+  "license": "MIT",
+  "environment": "client",
+  "entrypoints": {
+    "client": ["dev.umbra.Umbra"]
+  },
+  "mixins": ["umbra.mixins.json"],
+  "depends": {
+    "fabricloader": ">=0.19.3",
+    "minecraft": "~26.2",
+    "java": ">=25",
+    "fabric-api": "*"
+  }
+}
